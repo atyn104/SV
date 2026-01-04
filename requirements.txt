@@ -2,3 +2,5 @@ streamlit
 pandas
 plotly
 seaborn
+gspread
+oauth2client
