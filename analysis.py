@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # 1. Konfigurasi Halaman
 st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
