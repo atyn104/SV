@@ -69,7 +69,7 @@ try:
         
         st.divider()
         
-        # Scatter Plot
+        # Scatter Plot (Pastikan kurungan ditutup rapat)
         st.subheader("Scatter Plot (Trendline)")
         c1, c2 = st.columns(2)
         with c1:
@@ -77,4 +77,26 @@ try:
         with c2:
             y_axis = st.selectbox("Pilih Kesan (Y):", kesan_cols)
             
-        fig_scatter = px.scatter(df, x=x_axis, y
+        fig_scatter = px.scatter(
+            df, 
+            x=x_axis, 
+            y=y_axis, 
+            trendline="ols", 
+            opacity=0.5,
+            labels={x_axis: "Skor Faktor", y_axis: "Skor Kesan"}
+        )
+        fig_scatter.update_traces(line=dict(color="red"))
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # --- TAB 3: HEATMAP STATUS ---
+    with tab3:
+        st.header("Analisis Mengikut Status Responden")
+        if 'Status' in df.columns:
+            h_status = df.groupby('Status')[faktor_cols].mean()
+            h_status.columns = [c.replace('Faktor ', '') for c in h_status.columns]
+            fig_h = px.imshow(h_status, text_auto='.2f', color_continuous_scale='YlGnBu')
+            st.plotly_chart(fig_h, use_container_width=True)
+
+# --- BLOK EXCEPT ---
+except Exception as e:
+    st.error(f"Ralat teknikal: {e}")
