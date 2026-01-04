@@ -118,7 +118,3 @@ with col6:
                  color_discrete_sequence=['#2ecc71'], text_auto='.2f')
     fig7.update_layout(xaxis_range=[1, 5])
     st.plotly_chart(fig7, use_container_width=True)
-
-# --- JADUAL DATA ---
-with st.expander("Klik untuk lihat data mentah"):
-    st.dataframe(data)
