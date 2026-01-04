@@ -6,34 +6,32 @@ import plotly.graph_objects as go
 # 1. Konfigurasi Halaman
 st.set_page_config(page_title="Dashboard Analisis Kesesakan SV", layout="wide")
 
-st.title("📊 Dashboard Analisis Faktor & Kesan Kesesakan Jalan Raya")
+st.title("📊 Dashboard Analisis Faktor & Kesan Kesesakan")
 
-# URL data mentah (Gunakan salah satu; di sini saya gunakan DATA_URL untuk kemudahan Cloud Deployment)
+# URL data mentah
 DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
 
 @st.cache_data
 def load_data(url):
-    # Jika anda ingin guna fail tempatan, tukar url kepada 'project data.csv'
     return pd.read_csv(url)
 
+# --- MULA BLOK TRY ---
 try:
     df = load_data(DATA_URL)
     
-    # 2. Kenalpasti lajur penting
+    # Kenalpasti lajur
     faktor_cols = [col for col in df.columns if 'Faktor' in col]
     kesan_cols = [col for col in df.columns if 'Kesan' in col]
     
-    # Mencipta Tab untuk navigasi yang lebih bersih
+    # 2. Mencipta Tab Navigasi
     tab1, tab2, tab3 = st.tabs(["📈 Analisis Faktor", "🔗 Korelasi & Hubungan", "🗺️ Heatmap Status"])
 
     # --- TAB 1: ANALISIS FAKTOR ---
     with tab1:
         st.header("Analisis Skor Faktor")
-        
         col_a, col_b = st.columns(2)
         
         with col_a:
-            st.subheader("Skor Purata Keseluruhan")
             overall_means = df[faktor_cols].mean().sort_values(ascending=False).reset_index()
             overall_means.columns = ['Factor', 'Average Score']
             overall_means['Factor'] = overall_means['Factor'].str.replace('Faktor ', '')
@@ -43,11 +41,10 @@ try:
                 color='Average Score', color_continuous_scale='Viridis',
                 text_auto='.2f', title="Ranking Faktor Keseluruhan"
             )
-            fig_ranking.update_layout(yaxis={'categoryorder': 'total ascending'}, xaxis_range=[1, 5])
+            fig_ranking.update_layout(xaxis_range=[1, 5], yaxis={'categoryorder': 'total ascending'})
             st.plotly_chart(fig_ranking, use_container_width=True)
 
         with col_b:
-            st.subheader("Perbandingan Mengikut Kawasan")
             melted_df = df.melt(id_vars=['Jenis Kawasan'], value_vars=faktor_cols, 
                                var_name='Factor', value_name='Score')
             melted_df['Factor'] = melted_df['Factor'].str.replace('Faktor ', '')
@@ -66,20 +63,50 @@ try:
         st.header("Analisis Hubungan Faktor vs Kesan")
         
         # Heatmap Korelasi
-        st.subheader("Matriks Korelasi (Faktor vs Kesan)")
         correlation_matrix = df[faktor_cols + kesan_cols].corr()
         subset_corr = correlation_matrix.loc[faktor_cols, kesan_cols]
-        # Bersihkan nama lajur untuk visual
         subset_corr.index = [c.replace('Faktor ', '') for c in subset_corr.index]
         subset_corr.columns = [c.replace('Kesan ', '') for c in subset_corr.columns]
 
         fig_corr = px.imshow(
             subset_corr, text_auto=".2f", aspect="auto",
             color_continuous_scale='YlGnBu',
-            labels=dict(x="Kesan", y="Faktor", color="Korelasi")
+            title="Korelasi: Faktor vs Kesan"
         )
         st.plotly_chart(fig_corr, use_container_width=True)
         
         st.divider()
         
-        #
+        # Scatter Plot
+        st.subheader("Hubungan Spesifik (Scatter Plot)")
+        c1, c2 = st.columns(2)
+        with c1:
+            x_sel = st.selectbox("Pilih Faktor (X):", faktor_cols)
+        with c2:
+            y_sel = st.selectbox("Pilih Kesan (Y):", kesan_cols)
+
+        fig_scatter = px.scatter(
+            df, x=x_sel, y=y_sel, trendline="ols", opacity=0.5,
+            title=f"Garis Regresi: {x_sel} vs {y_sel}",
+            labels={x_sel: "Skor Faktor", y_sel: "Skor Kesan"}
+        )
+        fig_scatter.update_traces(line=dict(color="red"))
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # --- TAB 3: HEATMAP STATUS ---
+    with tab3:
+        st.header("Persepsi Mengikut Status Responden")
+        if 'Status' in df.columns:
+            heatmap_status = df.groupby('Status')[faktor_cols].mean()
+            heatmap_status.columns = [c.replace('Faktor ', '') for c in heatmap_status.columns]
+
+            fig_status = px.imshow(
+                heatmap_status, text_auto='.2f', aspect="auto",
+                color_continuous_scale='YlGnBu',
+                title="Purata Skor Faktor Mengikut Status"
+            )
+            st.plotly_chart(fig_status, use_container_width=True)
+
+# --- BLOK EXCEPT (Wajib ada selepas try) ---
+except Exception as e:
+    st.error(f"Ralat teknikal: {e}")
