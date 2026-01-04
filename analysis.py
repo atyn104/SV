@@ -8,7 +8,7 @@ st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
 st.title("📊 Perbandingan Faktor Mengikut Jenis Kawasan")
 
 # URL data mentah anda
-DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
+DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/test/project_dataSV_data.csv"
 
 @st.cache_data
 def load_data(url):
