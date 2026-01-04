@@ -5,7 +5,7 @@ import seaborn as sns
 
 # 1. Load your data
 # Ensure your CSV file is in the same folder as this script
-url = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/employment_sector.csv"
+url = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
 data = pd.read_csv(url) 
 
 # 2. Identify columns related to 'Factors'
