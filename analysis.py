@@ -6,8 +6,8 @@ import os
 
 # 1. Load your data
 # Ensure your CSV file is in the same folder as this script
-
-data = pd.read_csv('your_data_file.csv') 
+url = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/employment_sector.csv"
+data = pd.read_csv(url) 
 
 # 2. Identify columns related to 'Factors'
 factor_cols = [col for col in data.columns if col.startswith('Faktor')]
