@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# URL for the data file
+url = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
+
 st.title("Factor Analysis Dashboard")
 
 # 1. File Uploader for Streamlit
