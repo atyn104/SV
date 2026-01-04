@@ -93,3 +93,31 @@ fig.update_layout(
 
 # --- Streamlit Display ---
 st.plotly_chart(fig, use_container_width=True)
+
+faktor_cols = [col for col in df.columns if 'Faktor' in col]
+
+# Group and calculate mean
+heatmap_data = df.groupby('Status')[faktor_cols].mean()
+
+# Simplify factor names
+heatmap_data.columns = [col.replace('Faktor ', '') for col in heatmap_data.columns]
+
+# --- 2. Create Plotly Heatmap ---
+fig = px.imshow(
+    heatmap_data,
+    text_auto='.2f',               # Replaces annot=True
+    aspect="auto",                 # Ensures it fills the space properly
+    color_continuous_scale='YlGnBu', # Matches your Seaborn cmap
+    labels=dict(x="Faktor-faktor Kesesakan", y="Status Responden", color="Skor Purata"),
+    title='Persepsi Faktor Kesesakan Mengikut Status Responden (Purata Skor)'
+)
+
+# --- 3. Refine Layout for Streamlit ---
+fig.update_layout(
+    xaxis_title='Faktor-faktor Kesesakan',
+    yaxis_title='Status Responden',
+    title_x=0.5,                   # Centers the title
+)
+
+# --- 4. Render in Streamlit ---
+st.plotly_chart(fig, use_container_width=True)
