@@ -21,24 +21,23 @@ plot_data.columns = ['Factor', 'Average Score']
 plot_data['Factor'] = plot_data['Factor'].str.replace('Faktor ', '')
 
 # 5. Visualization
-plt.figure(figsize=(12, 8))
+fig, ax = plt.subplots(figsize=(12, 8))
 sns.barplot(
     data=plot_data, 
     x='Average Score', 
     y='Factor',
     hue='Factor', 
     palette='viridis',
-    legend=False
+    ax=ax
 )
 
 plt.title('Average Score of Influencing Factors (Overall)')
 plt.xlabel('Average Score (1 - 5)')
 plt.ylabel('Factors')
-plt.grid(axis='x', linestyle='--', alpha=0.7)
 
 # 6. Save results
 # Create an 'outputs' folder if it doesn't exist
 os.makedirs('outputs', exist_ok=True)
 plt.tight_layout()
 plt.savefig('outputs/average_factor_scores.png')
-plt.show()
+st.pyplot(fig)
