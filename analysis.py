@@ -6,6 +6,7 @@ import os
 
 # 1. Load your data
 # Ensure your CSV file is in the same folder as this script
+
 data = pd.read_csv('your_data_file.csv') 
 
 # 2. Identify columns related to 'Factors'
