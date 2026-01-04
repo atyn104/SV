@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib
-matplotlib.use('Agg')
+import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
 
 # 1. Load your data
 # Ensure your CSV file is in the same folder as this script
