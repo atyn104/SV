@@ -4,3 +4,5 @@ plotly
 seaborn
 gspread
 oauth2client
+statsmodels
+scipy
