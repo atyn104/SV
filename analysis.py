@@ -66,26 +66,27 @@ with col2:
 
 st.markdown("---")
 
-# --- BAHAGIAN 3: ANALISIS KORELASI & HUBUNGAN ---
-st.subheader("🔗 Hubungan antara Faktor Punca & Kesan")
-col3, col4 = st.columns([1.2, 0.8])
+# --- BAHAGIAN 3: ANALISIS HUBUNGAN (SCATTER PLOT SAHAJA) ---
+# Matriks Korelasi telah dibuang mengikut permintaan
+st.subheader("🔗 Hubungan Spesifik antara Faktor & Kesan")
 
-with col3:
-    correlation_matrix = data[factor_cols + kesan_cols].corr()
-    subset_corr = correlation_matrix.loc[factor_cols, kesan_cols]
-    subset_corr.index = [i.replace('Faktor ', '') for i in subset_corr.index]
-    subset_corr.columns = [c.replace('Kesan ', '') for c in subset_corr.columns]
+col_scatter_1, col_scatter_2 = st.columns([1, 2]) # Ratio untuk dropdown dan graf
 
-    fig4 = px.imshow(subset_corr, color_continuous_scale='RdBu_r', zmin=-1, zmax=1,
-                    title='<b>4. Matriks Korelasi: Faktor vs Kesan</b>', text_auto=".2f")
-    st.plotly_chart(fig4, use_container_width=True)
+with col_scatter_1:
+    st.write("<b>Sila pilih pembolehubah:</b>", unsafe_allow_html=True)
+    f_select = st.selectbox("Pilih Faktor (Paksi-X):", factor_cols)
+    k_select = st.selectbox("Pilih Kesan (Paksi-Y):", kesan_cols)
 
-with col4:
-    st.write("<b>5. Scatter Plot Hubungan Spesifik</b>", unsafe_allow_html=True)
-    f_select = st.selectbox("Pilih Faktor (X):", factor_cols)
-    k_select = st.selectbox("Pilih Kesan (Y):", kesan_cols)
-    fig5 = px.scatter(data, x=f_select, y=k_select, trendline="ols", trendline_color_override="red", opacity=0.5,
-                     title=f"Hubungan Spesifik")
+with col_scatter_2:
+    fig5 = px.scatter(
+        data, 
+        x=f_select, 
+        y=k_select, 
+        trendline="ols", 
+        trendline_color_override="red", 
+        opacity=0.5,
+        title=f"Analisis Regresi: {f_select.replace('Faktor ','')} vs {k_select.replace('Kesan ','')}"
+    )
     st.plotly_chart(fig5, use_container_width=True)
 
 st.markdown("---")
@@ -94,13 +95,11 @@ st.markdown("---")
 st.subheader("💡 Rumusan: Punca vs Langkah Penyelesaian")
 col5, col6 = st.columns(2)
 
-# Sediakan data Faktor
 f_means = data[factor_cols].mean().sort_values(ascending=True)
 f_plot = f_means.reset_index()
 f_plot.columns = ['Faktor', 'Skor']
 f_plot['Faktor'] = f_plot['Faktor'].str.replace('Faktor ', '')
 
-# Sediakan data Langkah
 l_means = data[langkah_cols].mean().sort_values(ascending=True)
 l_plot = l_means.reset_index()
 l_plot.columns = ['Langkah', 'Skor']
@@ -119,3 +118,7 @@ with col6:
                  color_discrete_sequence=['#2ecc71'], text_auto='.2f')
     fig7.update_layout(xaxis_range=[1, 5])
     st.plotly_chart(fig7, use_container_width=True)
+
+# --- JADUAL DATA ---
+with st.expander("Klik untuk lihat data mentah"):
+    st.dataframe(data)
