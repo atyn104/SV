@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# 1. Konfigurasi Halaman
+# 1. Page Configuration
 st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
 
-st.title("📊 Perbandingan Faktor Mengikut Jenis Kawasan")
+st.title("📊 Analisis Faktor Kesesakan")
 
-# URL data mentah anda (Pastikan URL ini betul dan boleh diakses)
+# URL data mentah
 DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
 
 @st.cache_data
@@ -15,109 +15,78 @@ def load_data(url):
     return pd.read_csv(url)
 
 try:
+    # Load data into 'data' variable
     data = load_data(DATA_URL)
-
-    # 2. Kenal pasti kolum 'Faktor'
+    
+    # 2. Identify columns starting with 'Faktor'
     factor_cols = [col for col in data.columns if col.startswith('Faktor')]
 
     if factor_cols:
-        # 3. Tukar format data (Melt) untuk perbandingan Jenis Kawasan
+        # --- CHART 1: Comparison by Jenis Kawasan ---
+        st.subheader("1. Perbandingan Mengikut Jenis Kawasan")
+        
+        # Melt data for grouped bar chart
         melted_data = data.melt(
             id_vars=['Jenis Kawasan'], 
             value_vars=factor_cols,
             var_name='Factor', 
-            value_name='Average Score'
+            value_name='Score'
         )
-
-        # 4. Bersihkan nama faktor
+        # Clean factor names
         melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '', regex=False)
         
-        # Kira purata skor mengikut kawasan dan faktor
-        summary_df = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
+        # Calculate mean per area and factor
+        summary_area = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Score'].mean().reset_index()
 
-        # 5. Bina Graf Plotly (Grouped Bar)
-        fig = px.bar(
-            summary_df, 
-            x='Average Score', 
-            y='Factor',
-            color='Jenis Kawasan',
-            barmode='group',
-            orientation='h',
-            title='Perbandingan Faktor Mengikut Jenis Kawasan',
-            labels={'Average Score': 'Skor Purata (1 - 5)', 'Factor': 'Faktor'},
+        fig1 = px.bar(
+            summary_area, x='Score', y='Factor', color='Jenis Kawasan',
+            barmode='group', orientation='h', text_auto='.2f',
+            title='Skor Purata Faktor Mengikut Jenis Kawasan',
+            labels={'Score': 'Skor Purata', 'Factor': 'Faktor'},
+            color_discrete_sequence=px.colors.qualitative.Safe
+        )
+        fig1.update_layout(xaxis_range=[1, 5], height=600)
+        st.plotly_chart(fig1, use_container_width=True)
+
+        st.divider()
+
+        # --- CHART 2: Overall Factor Ranking ---
+        st.subheader("2. Skor Purata Keseluruhan (Ranking)")
+        
+        # Calculate mean for each factor column
+        overall_means = data[factor_cols].mean().sort_values(ascending=False).reset_index()
+        overall_means.columns = ['Factor', 'Average Score']
+        overall_means['Factor'] = overall_means['Factor'].str.replace('Faktor ', '')
+
+        fig2 = px.bar(
+            overall_means, x='Average Score', y='Factor', orientation='h',
+            title='Ranking Faktor Keseluruhan (Tertinggi ke Terendah)',
+            color='Average Score', color_continuous_scale='Viridis',
             text_auto='.2f'
         )
+        fig2.update_layout(yaxis={'categoryorder': 'total ascending'}, xaxis_range=[1, 5], height=500)
+        st.plotly_chart(fig2, use_container_width=True)
 
-        fig.update_layout(
-            xaxis_range=[1, 5], 
-            height=800,
-            yaxis={'categoryorder':'total ascending'}
+        st.divider()
+
+        # --- CHART 3: Heatmap (Status vs Factors) ---
+        st.subheader("3. Heatmap Persepsi Mengikut Status")
+        
+        # Group by Status and get mean
+        heatmap_df = data.groupby('Status')[factor_cols].mean()
+        # Clean names for heatmap axes
+        heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
+
+        fig3 = px.imshow(
+            heatmap_df, text_auto='.2f', aspect="auto",
+            color_continuous_scale='YlGnBu',
+            title='Hubungan Status Responden dengan Faktor Kesesakan',
+            labels=dict(x="Faktor", y="Status Responden", color="Skor Purata")
         )
+        st.plotly_chart(fig3, use_container_width=True)
 
-        # 6. Papar graf
-        st.plotly_chart(fig, use_container_width=True)
     else:
-        st.error("Ralat: Kolum yang bermula dengan perkataan 'Faktor' tidak dijumpai dalam CSV anda.")
+        st.error("Ralat: Tiada kolum 'Faktor' ditemui dalam data.")
 
 except Exception as e:
-    st.error(f"Ralat teknikal: {e}")
-
-
-# --- Data Processing (Same as your original logic) ---
-factor_cols = [col for col in data.columns if col.startswith('Faktor')]
-factor_means = data[factor_cols].mean().sort_values(ascending=False)
-
-plot_data = factor_means.reset_index()
-plot_data.columns = ['Factor', 'Average Score']
-plot_data['Factor'] = plot_data['Factor'].str.replace('Faktor ', '')
-
-# --- Plotly Visualization ---
-fig = px.bar(
-    plot_data, 
-    x='Average Score', 
-    y='Factor', 
-    orientation='h',  # Horizontal bar chart
-    title='Average Score of Influencing Factors (Overall)',
-    labels={'Average Score': 'Average Score (1 - 5)', 'Factor': 'Factors'},
-    color='Average Score',      # Color bars by value
-    color_continuous_scale='Viridis',
-    text_auto='.2f'            # Automatically shows the value on the bar
-)
-
-# Improve layout for Streamlit
-fig.update_layout(
-    yaxis={'categoryorder': 'total ascending'}, # Ensures the highest score is at the top
-    xaxis_range=[1, 5],                         # Set range based on your 1-5 scale
-    height=600                                  # Adjust height based on number of factors
-)
-
-# --- Streamlit Display ---
-st.plotly_chart(fig, use_container_width=True)
-
-faktor_cols = [col for col in df.columns if 'Faktor' in col]
-
-# Group and calculate mean
-heatmap_data = df.groupby('Status')[faktor_cols].mean()
-
-# Simplify factor names
-heatmap_data.columns = [col.replace('Faktor ', '') for col in heatmap_data.columns]
-
-# --- 2. Create Plotly Heatmap ---
-fig = px.imshow(
-    heatmap_data,
-    text_auto='.2f',               # Replaces annot=True
-    aspect="auto",                 # Ensures it fills the space properly
-    color_continuous_scale='YlGnBu', # Matches your Seaborn cmap
-    labels=dict(x="Faktor-faktor Kesesakan", y="Status Responden", color="Skor Purata"),
-    title='Persepsi Faktor Kesesakan Mengikut Status Responden (Purata Skor)'
-)
-
-# --- 3. Refine Layout for Streamlit ---
-fig.update_layout(
-    xaxis_title='Faktor-faktor Kesesakan',
-    yaxis_title='Status Responden',
-    title_x=0.5,                   # Centers the title
-)
-
-# --- 4. Render in Streamlit ---
-st.plotly_chart(fig, use_container_width=True)
+    st.error(f"Ralat teknikal semasa memproses data: {e}")
