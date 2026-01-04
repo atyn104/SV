@@ -61,3 +61,35 @@ try:
 
 except Exception as e:
     st.error(f"Ralat teknikal: {e}")
+
+
+# --- Data Processing (Same as your original logic) ---
+factor_cols = [col for col in data.columns if col.startswith('Faktor')]
+factor_means = data[factor_cols].mean().sort_values(ascending=False)
+
+plot_data = factor_means.reset_index()
+plot_data.columns = ['Factor', 'Average Score']
+plot_data['Factor'] = plot_data['Factor'].str.replace('Faktor ', '')
+
+# --- Plotly Visualization ---
+fig = px.bar(
+    plot_data, 
+    x='Average Score', 
+    y='Factor', 
+    orientation='h',  # Horizontal bar chart
+    title='Average Score of Influencing Factors (Overall)',
+    labels={'Average Score': 'Average Score (1 - 5)', 'Factor': 'Factors'},
+    color='Average Score',      # Color bars by value
+    color_continuous_scale='Viridis',
+    text_auto='.2f'            # Automatically shows the value on the bar
+)
+
+# Improve layout for Streamlit
+fig.update_layout(
+    yaxis={'categoryorder': 'total ascending'}, # Ensures the highest score is at the top
+    xaxis_range=[1, 5],                         # Set range based on your 1-5 scale
+    height=600                                  # Adjust height based on number of factors
+)
+
+# --- Streamlit Display ---
+st.plotly_chart(fig, use_container_width=True)
