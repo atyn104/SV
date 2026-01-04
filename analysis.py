@@ -1,17 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 
 # 1. Konfigurasi Halaman
 st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
 
 st.title("📊 Perbandingan Faktor Mengikut Jenis Kawasan")
 
-# URL data mentah anda
-DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/test/project_dataSV_data.csv"
+# URL data mentah anda (Pastikan URL ini betul dan boleh diakses)
+DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
 
 @st.cache_data
 def load_data(url):
@@ -34,6 +31,8 @@ try:
 
         # 4. Bersihkan nama faktor
         melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '', regex=False)
+        
+        # Kira purata skor mengikut kawasan dan faktor
         summary_df = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
 
         # 5. Bina Graf Plotly (Grouped Bar)
@@ -49,12 +48,16 @@ try:
             text_auto='.2f'
         )
 
-        fig.update_layout(xaxis_range=[1, 5], height=800)
+        fig.update_layout(
+            xaxis_range=[1, 5], 
+            height=800,
+            yaxis={'categoryorder':'total ascending'}
+        )
 
         # 6. Papar graf
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.error("Kolum 'Faktor' tidak dijumpai.")
+        st.error("Ralat: Kolum yang bermula dengan perkataan 'Faktor' tidak dijumpai dalam CSV anda.")
 
 except Exception as e:
-    st.error(f"Ralat: {e}")
+    st.error(f"Ralat teknikal: {e}")
