@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # 1. Konfigurasi Halaman
-st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
+st.set_page_config(page_title="Analysis of Factors and Perceptions of Traffic Congestion in School Areas", layout="wide")
 
 st.title("📊Analysis of Factors and Perceptions of Traffic Congestion in School Areas")
 
