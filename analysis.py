@@ -4,7 +4,7 @@ import streamlit as st
 import numpy as np
 
 # 1. Konfigurasi Halaman Streamlit
-st.set_page_config(page_title="Dashboard Analisis Kesesakan", layout="wide")
+st.set_page_config(page_title="Analysis of Factors and Perceptions of Traffic Congestion in School Areas", layout="wide")
 
 # 2. Masukkan URL data mentah
 DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
