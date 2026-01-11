@@ -5,7 +5,7 @@ import plotly.express as px
 # 1. Konfigurasi Halaman
 st.set_page_config(page_title="Analisis Faktor SV", layout="wide")
 
-st.title("📊 Perbandingan Faktor Mengikut Jenis Kawasan")
+st.title("📊Analysis of Factors and Perceptions of Traffic Congestion in School Areas")
 
 # URL data mentah anda
 DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
