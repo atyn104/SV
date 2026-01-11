@@ -23,7 +23,7 @@ kesan_cols = [col for col in data.columns if col.startswith('Kesan')]
 langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
 
 # --- BAHAGIAN 1: PURATA SKOR KESELURUHAN ---
-st.title("📊 Dashboard Analisis Faktor, Kesan & Langkah Kesesakan")
+st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion in School Areas")
 
 factor_means = data[factor_cols].mean().sort_values(ascending=True)
 plot_data_overall = factor_means.reset_index()
