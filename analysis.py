@@ -56,8 +56,8 @@ with col1:
     comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
     fig2 = px.bar(comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan', barmode='group', orientation='h',
                  title='<b>2. Comparison: Urban vs. Rural Areas</b>', labels={'Jenis Kawasan': 'Area Type'}, text_auto='.2f')
-  fig2.update_layout(height=700)  
-  st.plotly_chart(fig2, use_container_width=True)
+    fig2.update_layout(height=700)  
+    st.plotly_chart(fig2, use_container_width=True)
 
 st.markdown("---")
 
