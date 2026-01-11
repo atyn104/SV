@@ -48,9 +48,7 @@ st.markdown("---")
 
 # --- BAHAGIAN 2: DEMOGRAPHIC COMPARISON & STATUS HEATMAP ---
 st.subheader("🏙️ Demographic Analysis")
-col1, col2 = st.columns(2)
 
-with col1:
     melted_data = data.melt(id_vars=['Jenis Kawasan'], value_vars=factor_cols, var_name='Factor', value_name='Average Score')
     melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
     comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
@@ -64,7 +62,6 @@ st.markdown("---")
 # --- SECTION 3: HEATMAP ANALYSIS ---
 st.subheader("🌡️ Heatmap Analysis")
 
-with col2:
     heatmap_df = data.groupby('Status')[factor_cols].mean()
     heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
     fig3 = px.imshow(heatmap_df, color_continuous_scale='YlGnBu', title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto")
