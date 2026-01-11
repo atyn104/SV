@@ -49,23 +49,23 @@ st.markdown("---")
 # --- BAHAGIAN 2: DEMOGRAPHIC COMPARISON & STATUS HEATMAP ---
 st.subheader("🏙️ Demographic Analysis")
 
-    melted_data = data.melt(id_vars=['Jenis Kawasan'], value_vars=factor_cols, var_name='Factor', value_name='Average Score')
-    melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
-    comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
-    fig2 = px.bar(comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan', barmode='group', orientation='h',
+melted_data = data.melt(id_vars=['Jenis Kawasan'], value_vars=factor_cols, var_name='Factor', value_name='Average Score')
+melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
+comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
+fig2 = px.bar(comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan', barmode='group', orientation='h',
                  title='<b>2. Comparison: Urban vs. Rural Areas</b>', labels={'Jenis Kawasan': 'Area Type'}, text_auto='.2f')
-    fig2.update_layout(height=700)  
-    st.plotly_chart(fig2, use_container_width=True)
+fig2.update_layout(height=700)  
+st.plotly_chart(fig2, use_container_width=True)
 
 st.markdown("---")
 
 # --- SECTION 3: HEATMAP ANALYSIS ---
 st.subheader("🌡️ Heatmap Analysis")
 
-    heatmap_df = data.groupby('Status')[factor_cols].mean()
-    heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
-    fig3 = px.imshow(heatmap_df, color_continuous_scale='YlGnBu', title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto")
-    st.plotly_chart(fig3, use_container_width=True)
+heatmap_df = data.groupby('Status')[factor_cols].mean()
+heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
+fig3 = px.imshow(heatmap_df, color_continuous_scale='YlGnBu', title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto")
+st.plotly_chart(fig3, use_container_width=True)
 
 st.markdown("---")
 
